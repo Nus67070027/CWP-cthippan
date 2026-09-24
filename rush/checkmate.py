@@ -1,75 +1,120 @@
-"""ไฟล์หลักสำหรับตรวจจับการ Checkmate"""
-
 def checkmate(board):
-    # ตรวจว่าค่าที่ส่งมาจาก main.py (board) เป็น String มั้ย ถ้าไม่ใช่จะ Error
+
+    # ตรวจสอบว่าข้อมูลที่รับมาเป็น String หรือไม่
     if not isinstance(board, str):
         print("Error")
         return
 
-    # แยก String ที่รับมาเป็นแต่ละแถวเก็บไว้ใน lines
-    lines = board.split('\n')
-    n = len(lines)
-    if n == 0:
+    # แยกกระดานออกเป็นแต่ละแถว
+    board_rows = board.split("\n")
+    board_size = len(board_rows)
+
+    if board_size == 0:
         print("Error")
         return
-    
-    # ตรวจว่ากระดานใน main.py เป็นสี่เหลี่ยมจัตุรัสมั้ย ถ้าไม่ใช่จะ Error
-    for line in lines:
-        if len(line) != n:
+
+    # ตรวจสอบว่ากระดานเป็นสี่เหลี่ยมจัตุรัสหรือไม่
+    for row in board_rows:
+        if len(row) != board_size:
             print("Error")
             return
 
-    # ค้นหาตำแหน่งของ King (K) (kr = King Row, kc = King Column)
-    kr, kc = -1, -1
-    k_count = 0
-    for r in range(n):
-        for c in range(n):
-            if lines[r][c] == 'K':
-                kr = r
-                kc = c
-                k_count += 1
+    # ค้นหาตำแหน่งของ King
+    king_row = -1
+    king_col = -1
+    king_count = 0
 
-    # ต้องมี King แค่ 1 ตัวเท่านั้นบนกระดาน ถ้าไม่ใช่จะ Error
-    if k_count != 1:
+    for row in range(board_size):
+        for col in range(board_size):
+            if board_rows[row][col] == "K":
+                king_row = row
+                king_col = col
+                king_count += 1
+
+    # ต้องมี King เพียง 1 ตัว
+    if king_count != 1:
         print("Error")
         return
 
     # รายชื่อตัวหมากทั้งหมด
-    pieces = ['K', 'P', 'B', 'R', 'Q']
+    chess_pieces = ["K", "P", "B", "R", "Q"]
 
-    # ตรวจสอบแนวตรงทางซ้าย, ขวา, บน, ล่าง สำหรับ Rook และ Queen (r = Row, c = Column, p = pieces)
-    for row_step, col_step in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        r, c = kr + row_step, kc + col_step
-        while 0 <= r < n and 0 <= c < n:
-            p = lines[r][c]
-            if p in ['R', 'Q']:
-                print("Success")
-                return
-            if p in pieces:  # ถ้าเจอหมากตัวอื่นที่กินแนวตรงไม่ได้จะถือว่าโดนบังทาง
-                break
-            # ถ้าเป็นตัวอักษรอื่นจะถือว่าเป็นช่องว่าง ให้ข้ามไปเช็คช่องต่อไป
-            r += row_step
-            c += col_step
+    # ตรวจสอบแนวตรง (บน ล่าง ซ้าย ขวา)
+    # สำหรับ Rook และ Queen
+    straight_directions = [
+        (-1, 0),  # บน
+        (1, 0),   # ล่าง
+        (0, -1),  # ซ้าย
+        (0, 1)    # ขวา
+    ]
 
-    # ตรวจสอบแนวทแยง 4 มุม สำหรับ Bishop, Queen และ Pawn
-    for row_step, col_step in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
-        r, c = kr + row_step, kc + col_step
-        step = 1
-        while 0 <= r < n and 0 <= c < n:
-            p = lines[r][c]
-            if p in ['B', 'Q']:
+    for row_direction, col_direction in straight_directions:
+
+        current_row = king_row + row_direction
+        current_col = king_col + col_direction
+
+        while (
+            0 <= current_row < board_size
+            and 0 <= current_col < board_size
+        ):
+
+            current_piece = board_rows[current_row][current_col]
+
+            # Rook หรือ Queen สามารถกิน King ได้
+            if current_piece in ["R", "Q"]:
                 print("Success")
                 return
-            # Pawn กินได้เฉพาะแนวทแยงมุมด้านหน้า 1 ช่องเท่านั้น (row_step == 1 คือ Pawn อยู่แถวด้านล่างของ K แล้วมองขึ้นมากิน)
-            if p == 'P' and row_step == 1 and step == 1:
-                print("Success")
-                return
-            if p in pieces: # ถ้าเจอหมากตัวอื่นที่กินแนวทแยงไม่ได้จะถือว่าโดนบังทาง
+
+            # เจอหมากตัวอื่นบังทาง
+            if current_piece in chess_pieces:
                 break
-            # ขยับพิกัดการมองไปตามก้าวที่กำหนด
-            r += row_step
-            c += col_step
-            step += 1
-            
-    # ถ้ารอดจากรัศมีการกินทั้งหมดแสดงว่า K ปลอดภัยโดยจะขึ้นว่า Fail
+
+            current_row += row_direction
+            current_col += col_direction
+
+    # ตรวจสอบแนวทแยง
+    # สำหรับ Bishop, Queen และ Pawn
+    diagonal_directions = [
+        (-1, -1),
+        (-1, 1),
+        (1, -1),
+        (1, 1)
+    ]
+
+    for row_direction, col_direction in diagonal_directions:
+
+        current_row = king_row + row_direction
+        current_col = king_col + col_direction
+        distance = 1
+
+        while (
+            0 <= current_row < board_size
+            and 0 <= current_col < board_size
+        ):
+
+            current_piece = board_rows[current_row][current_col]
+
+            # Bishop หรือ Queen สามารถกิน King ได้
+            if current_piece in ["B", "Q"]:
+                print("Success")
+                return
+
+            # Pawn กินได้เฉพาะแนวทแยงด้านหน้า 1 ช่อง
+            if (
+                current_piece == "P"
+                and row_direction == 1
+                and distance == 1
+            ):
+                print("Success")
+                return
+
+            # เจอหมากตัวอื่นบังทาง
+            if current_piece in chess_pieces:
+                break
+
+            current_row += row_direction
+            current_col += col_direction
+            distance += 1
+
+    # ถ้าไม่มีตัวไหนกิน King ได้
     print("Fail")

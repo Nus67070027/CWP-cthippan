@@ -1,5 +1,3 @@
-"""ไฟล์นี้ไว้ใช้ทดสอบ checkmate.py"""
-
 from checkmate import checkmate
 
 def main():
