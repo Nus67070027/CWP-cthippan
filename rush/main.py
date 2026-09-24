@@ -1,0 +1,15 @@
+"""ไฟล์นี้ไว้ใช้ทดสอบ checkmate.py"""
+
+from checkmate import checkmate
+
+def main():
+    board = """\
+R...
+.K..
+..P.
+....\
+"""
+    checkmate(board)
+
+if __name__ == "__main__":
+    main()
