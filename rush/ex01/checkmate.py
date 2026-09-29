@@ -15,6 +15,7 @@ def checkmate(board):
 
     # ตรวจสอบว่ากระดานเป็นสี่เหลี่ยมจัตุรัสหรือไม่
     for row in board_rows:
+
         if len(row) != board_size:
             print("Error")
             return
@@ -26,6 +27,8 @@ def checkmate(board):
 
     for row in range(board_size):
         for col in range(board_size):
+            # if board_rows[row][col] != "K" or  "P", "B", "R", "Q", ".":
+
             if board_rows[row][col] == "K":
                 king_row = row
                 king_col = col

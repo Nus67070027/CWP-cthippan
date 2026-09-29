@@ -1,4 +1,5 @@
 def checkmate(board):
+    ll = ["K", "P", "B", "R", "Q", "."]
 
     # ตรวจสอบว่าข้อมูลที่รับมาเป็น String หรือไม่
     if not isinstance(board, str):
@@ -15,6 +16,10 @@ def checkmate(board):
 
     # ตรวจสอบว่ากระดานเป็นสี่เหลี่ยมจัตุรัสหรือไม่
     for row in board_rows:
+        if row not in ll:
+            print("Error")
+            return
+
         if len(row) != board_size:
             print("Error")
             return

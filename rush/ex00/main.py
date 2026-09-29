@@ -1,12 +1,7 @@
-from rush.ex00.checkmate import checkmate
+from checkmate import checkmate
 
 def main():
-    board = """\
-R...
-.K..
-..P.
-....\
-"""
+    board = "Q#@%.\n.#@%.\n..K%.\n....#\n....."
     checkmate(board)
 
 if __name__ == "__main__":
